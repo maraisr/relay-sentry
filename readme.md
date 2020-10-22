@@ -71,7 +71,7 @@ Apply's a tag when the exception was as a Result of Relay.
 
 ### `logFunction(options?: Options): LogFunction`
 
-### `Options`
+`Options`
 
 | Option        | Description                                  | Default         |
 | ------------- | -------------------------------------------- | --------------- |
@@ -99,7 +99,7 @@ const environment = new Environment({
 </details>
 
 <details>
-<summary>The error's context looks like `[ [Object] ]`</summary>
+<summary>The error's context looks like <code>[ [Object] ]</code></summary>
 
 When you're running `Sentry.init` set the
 [`normalizeDepth`](https://docs.sentry.io/platforms/javascript/configuration/options/#normalize-depth)
