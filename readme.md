@@ -28,13 +28,13 @@ property called `graphqlErrors`. Internally we look for that key on the error
 object, and send it.
 
 <details>
-<summary>We include the global property for TypeScript users.</summary>
+<summary>TypeScript users, we export an interface to help:</summary>
 
 ```ts
+import type { ErrorWithGraphQLErrors } from 'relay-sentry';
+
 declare global {
-	interface Error {
-		graphqlErrors?: ReadonlyArray<GraphQLFormattedError>;
-	}
+	interface Error extends ErrorWithGraphQLErrors {}
 }
 ```
 
