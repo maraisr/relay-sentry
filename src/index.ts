@@ -1,9 +1,139 @@
+import { addBreadcrumb, captureException } from '@sentry/minimal';
+import type { GraphQLFormattedError } from 'graphql';
+import type { RequestParameters } from 'relay-runtime';
 import type { LogFunction } from 'relay-runtime/lib/store/RelayStoreTypes';
 
-export const logFunction = (customLogger?: LogFunction): LogFunction => (
-	logEvent,
-) => {
-	// Do stuff to Sentry
+declare global {
+	interface Error {
+		graphqlErrors?: ReadonlyArray<GraphQLFormattedError>;
+	}
+}
 
-	customLogger?.(logEvent);
+type LogEvent = Parameters<LogFunction>[0];
+
+type GroupingOf<Col extends LogEvent, Grp extends string> =
+	Col extends { name: `${Grp}.${string}` } ? Col : never;
+
+interface Options {
+	tag?: string;
+}
+
+const CATEGORY = 'relay' as const;
+
+const isExecuteEvent = (
+	logEvent: LogEvent,
+): logEvent is GroupingOf<typeof logEvent, 'execute'> =>
+	logEvent.name.startsWith('execute');
+
+const isQueryResourceEvent = (
+	logEvent: LogEvent,
+): logEvent is GroupingOf<typeof logEvent, 'queryresource'> =>
+	logEvent.name.startsWith('queryresource');
+
+const errorsIsGraphQLError = (
+	errors: any,
+): errors is ReadonlyArray<GraphQLFormattedError> =>
+	Array.isArray(errors) && errors.some((item) => 'message' in item);
+
+export const logFunction = ({
+	tag = 'data.client',
+}: Options = {}): LogFunction => (logEvent) => {
+	const category = `${CATEGORY}.${logEvent.name}`;
+
+	if (isExecuteEvent(logEvent)) {
+		const { transactionID } = logEvent;
+		switch (logEvent.name) {
+			case 'execute.start': {
+				const params = logEvent.params as RequestParameters;
+
+				addBreadcrumb({
+					type: 'info',
+					category,
+					data: {
+						transactionID,
+						id: params.id ?? params.cacheID,
+						kind: params.operationKind,
+						name: params.name,
+						variables: logEvent.variables,
+					},
+				});
+				break;
+			}
+			case 'execute.error': {
+				let errors: ReadonlyArray<GraphQLFormattedError> | 'na' = 'na';
+
+				if (
+					'graphqlErrors' in logEvent.error &&
+					errorsIsGraphQLError(logEvent.error.graphqlErrors)
+				) {
+					errors = logEvent.error.graphqlErrors;
+				}
+
+				captureException(logEvent.error, {
+					tags: {
+						[tag]: 'relay',
+					},
+					contexts: {
+						relay: {
+							transactionID,
+							name: logEvent.name,
+							errors,
+						},
+					},
+				});
+				break;
+			}
+			default: {
+				addBreadcrumb({
+					type: 'debug',
+					category,
+					data: {
+						transactionID,
+					},
+				});
+				break;
+			}
+		}
+	} else if (isQueryResourceEvent(logEvent)) {
+		// @ts-ignore wait for https://github.com/DefinitelyTyped/DefinitelyTyped/pull/49006 to merge
+		const { resourceID } = logEvent;
+		switch (logEvent.name) {
+			case 'queryresource.fetch': {
+				const params = logEvent.operation.request.node.params;
+
+				addBreadcrumb({
+					type: 'info',
+					category,
+					data: {
+						resourceID,
+						id: params.id ?? params.cacheID,
+						kind: params.operationKind,
+						name: params.name,
+						variables: logEvent.operation.root.variables,
+						shouldFetch: logEvent.shouldFetch ? 'yes' : 'no',
+						fetchPolicy: logEvent.fetchPolicy,
+						renderPolicy: logEvent.renderPolicy,
+						queryAvailability: logEvent.queryAvailability,
+					},
+				});
+
+				break;
+			}
+			default: {
+				addBreadcrumb({
+					type: 'debug',
+					category,
+					data: {
+						resourceID,
+					},
+				});
+				break;
+			}
+		}
+	} else {
+		addBreadcrumb({
+			type: 'debug',
+			category,
+		});
+	}
 };

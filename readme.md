@@ -2,8 +2,6 @@
 
 > Relay log function that enriches Sentry with Relay lifecycles and GraphQL data
 
-STUFF
-
 ## ⚙️ Install
 
 ```sh
@@ -16,19 +14,71 @@ yarn add relay-sentry
 import { logFunction } from 'relay-sentry';
 import { Environment } from 'relay-runtime';
 
-// For when you want to log  your own things
-const myLogFunction = (logEvent) => {
-	console.log(logEvent.name);
-};
-
 const environment = new Environment({
-	log: logFunction(myLogFunction),
+	log: logFunction(),
 	network,
 	store,
 });
 ```
 
+If you're wanting to also include the
+[GraphQL `errors` array](http://spec.graphql.org/draft/#sec-Errors) to the
+Sentry exception context. You can throw a _custom_ `Error` class that contains a
+property called `graphqlErrors`. Internally we look for that key on the error
+object, and send it.
+
+<details>
+<summary>We include the global property for TypeScript users.</summary>
+
+```ts
+declare global {
+	interface Error {
+		graphqlErrors?: ReadonlyArray<GraphQLFormattedError>;
+	}
+}
+```
+
+</details>
+
 ## 🔎 API
+
+### `logFunction(options?: Options): LogFunction`
+
+### `Options`
+
+| Option        | Description                                  | Default         |
+| ------------- | -------------------------------------------- | --------------- |
+| `tag: string` | The tag key used when raising a Sentry error | `"data.client"` |
+
+## ⁉ Help
+
+<details>
+<summary>How can I log something custom?</summary>
+
+```ts
+import { logFunction } from 'relay-sentry';
+import { Environment } from 'relay-runtime';
+
+const environment = new Environment({
+	log: (logEvent) => {
+		logFunction(logEvent);
+		// Do your logs
+	},
+	network,
+	store,
+});
+```
+
+</details>
+
+<details>
+<summary>The error's context looks like `[ [Object] ]`</summary>
+
+When you're running `Sentry.init` set the
+[`normalizeDepth`](https://docs.sentry.io/platforms/javascript/configuration/options/#normalize-depth)
+to something bigger, maybe 10.
+
+</details>
 
 ## License
 

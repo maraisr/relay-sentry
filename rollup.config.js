@@ -21,14 +21,18 @@ export default {
 			format: 'umd',
 			file: pkg.unpkg,
 			sourcemap: false,
+			globals: {
+				'@sentry/minimal': 'Sentry',
+				'@sentry/types': 'Sentry',
+			},
 			plugins: [terser()],
 		},
 	],
-	external: {
+	external: [
 		...require('module').builtinModules,
 		...Object.keys(pkg.dependencies || {}),
 		...Object.keys(pkg.peerDependencies || {}),
-	},
+	],
 	plugins: [
 		resolve(),
 		typescript({

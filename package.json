@@ -49,20 +49,26 @@
 		"trailingComma": "all",
 		"useTabs": true
 	},
+	"dependencies": {
+		"@sentry/minimal": "^5.27.0",
+		"@sentry/types": "^5.27.0"
+	},
 	"devDependencies": {
 		"@marais/tsconfig": "^0.0.1",
 		"@rollup/plugin-node-resolve": "9.0.0",
 		"@types/relay-runtime": "^10.0.4",
+		"graphql": "^15.3.0",
 		"prettier": "^2.0.5",
 		"rollup": "2.32.1",
 		"rollup-plugin-terser": "7.0.2",
 		"rollup-plugin-typescript2": "0.28.0",
 		"ts-node": "^9.0.0",
-		"typescript": "^4.0.3",
+		"typescript": "^4.1.0-dev.20201021",
 		"uvu": "^0.3.0"
 	},
 	"peerDependencies": {
-		"@types/relay-runtime": "^10.0.4"
+		"@types/relay-runtime": "^10.0.4",
+		"graphql": "^15.3.0"
 	},
 	"engines": {
 		"node": ">=10"
