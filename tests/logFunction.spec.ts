@@ -161,4 +161,40 @@ logFunction('execute.error', async () => {
 	});
 });
 
+// To truely test the logger does its job correctly we'd need to bootstrap React—so we're just going to mock
+logFunction('queryresource', () => {
+	relaySentry.logFunction()({
+		name: 'queryresource.fetch',
+		fetchPolicy: 'network-only',
+		operation: {
+			request: {
+				node: {
+					// @ts-ignore
+					params: {
+						operationKind: 'query',
+						name: 'MyQuery',
+						id: '123',
+					},
+				},
+				variables: { something: true },
+			},
+		},
+		queryAvailability: { status: 'missing' },
+		shouldFetch: true,
+		renderPolicy: 'partial',
+	});
+
+	// @ts-ignore
+	const crumbs = getCurrentHub().getScope()._breadcrumbs;
+	assert.is(Array.isArray(crumbs), true);
+
+	assert.snapshot(
+		crumbs
+			.map((i) => breadCrumbFormatter(i))
+			.join('\n')
+			.toString(),
+		`info (info) | relay.queryresource.fetch | {"id":"123","kind":"query","name":"MyQuery","variables":{"something":true},"shouldFetch":"yes","fetchPolicy":"network-only","renderPolicy":"partial","queryAvailability":{"status":"missing"}}`,
+	);
+});
+
 logFunction.run();

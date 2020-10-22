@@ -45,7 +45,7 @@ declare global {
 
 ## 🎢 What does it add?
 
-### Breadcrumbs ✔
+### Breadcrumbs ✅
 
 Leaves a debug/info breadcrumb trail for all intermediate life cycle events.
 
@@ -54,14 +54,14 @@ Leaves a debug/info breadcrumb trail for all intermediate life cycle events.
 > At this stage it doesn't filter any variables, but if there's a need for
 > it—submit a PR 🕺
 
-### Contexts ✔
+### Contexts ✅
 
 If the error was as a result of a Relay or Relay Network error, then this will
 include the remote errors array payload.
 
 ![contexts](assets/context.jpg)
 
-### Customisable Tag ✔
+### Customisable Tag ✅
 
 Apply's a tag when the exception was as a Result of Relay.
 

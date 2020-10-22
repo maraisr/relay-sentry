@@ -111,7 +111,10 @@ export const logFunction = ({
 		const { resourceID } = logEvent;
 		switch (logEvent.name) {
 			case 'queryresource.fetch': {
-				const params = logEvent.operation.request.node.params;
+				const {
+					node: { params },
+					variables,
+				} = logEvent.operation.request;
 
 				addBreadcrumb({
 					type: 'info',
@@ -122,7 +125,7 @@ export const logFunction = ({
 						id: params.id ?? params.cacheID,
 						kind: params.operationKind,
 						name: params.name,
-						variables: logEvent.operation.root.variables,
+						variables,
 						shouldFetch: logEvent.shouldFetch ? 'yes' : 'no',
 						fetchPolicy: logEvent.fetchPolicy,
 						renderPolicy: logEvent.renderPolicy,
