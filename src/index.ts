@@ -1,4 +1,5 @@
 import { addBreadcrumb, captureException } from '@sentry/minimal';
+import { Severity } from '@sentry/types';
 import type { GraphQLFormattedError } from 'graphql';
 import type { RequestParameters } from 'relay-runtime';
 import type { LogFunction } from 'relay-runtime/lib/store/RelayStoreTypes';
@@ -56,6 +57,7 @@ export const logFunction = ({
 
 				addBreadcrumb({
 					type: 'info',
+					level: Severity.Info,
 					category,
 					data: {
 						transactionID,
@@ -95,6 +97,7 @@ export const logFunction = ({
 			default: {
 				addBreadcrumb({
 					type: 'debug',
+					level: Severity.Debug,
 					category,
 					data: {
 						transactionID,
@@ -112,6 +115,7 @@ export const logFunction = ({
 
 				addBreadcrumb({
 					type: 'info',
+					level: Severity.Info,
 					category,
 					data: {
 						resourceID,
@@ -131,6 +135,7 @@ export const logFunction = ({
 			default: {
 				addBreadcrumb({
 					type: 'debug',
+					level: Severity.Debug,
 					category,
 					data: {
 						resourceID,
@@ -142,6 +147,7 @@ export const logFunction = ({
 	} else {
 		addBreadcrumb({
 			type: 'debug',
+			level: Severity.Debug,
 			category,
 		});
 	}

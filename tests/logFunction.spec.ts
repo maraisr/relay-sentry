@@ -14,7 +14,9 @@ declare global {
 }
 
 const breadCrumbFormatter = (crumb: Breadcrumb): string =>
-	`${crumb.type} | ${crumb.category} | ${JSON.stringify(crumb.data)}`;
+	`${crumb.type} (${crumb.level}) | ${crumb.category} | ${JSON.stringify(
+		crumb.data,
+	)}`;
 
 const environment = createMockEnvironment({
 	// @ts-ignore
@@ -92,9 +94,9 @@ logFunction('execute', async () => {
 			.map((i) => breadCrumbFormatter(i))
 			.join('\n')
 			.toString(),
-		`info | relay.execute.start | {"transactionID":100000,"id":"77d0bff0563d7c4e8753ad3a6b219c1e","kind":"query","name":"MyQuery","variables":{"something":true}}
-debug | relay.execute.next | {"transactionID":100000}
-debug | relay.execute.complete | {"transactionID":100000}`,
+		`info (info) | relay.execute.start | {"transactionID":100000,"id":"77d0bff0563d7c4e8753ad3a6b219c1e","kind":"query","name":"MyQuery","variables":{"something":true}}
+debug (debug) | relay.execute.next | {"transactionID":100000}
+debug (debug) | relay.execute.complete | {"transactionID":100000}`,
 	);
 });
 
@@ -144,7 +146,7 @@ logFunction('execute.error', async () => {
 			.map((i) => breadCrumbFormatter(i))
 			.join('\n')
 			.toString(),
-		`info | relay.execute.start | {"transactionID":100001,"id":"77d0bff0563d7c4e8753ad3a6b219c1e","kind":"query","name":"MyQuery","variables":{"something":true}}`,
+		`info (info) | relay.execute.start | {"transactionID":100001,"id":"77d0bff0563d7c4e8753ad3a6b219c1e","kind":"query","name":"MyQuery","variables":{"something":true}}`,
 	);
 
 	assert.equal(error.contexts.relay, {
