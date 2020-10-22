@@ -9,6 +9,10 @@ import * as assert from 'uvu/assert';
 
 import * as relaySentry from '../src';
 
+declare global {
+	interface Error extends relaySentry.ErrorWithGraphQLErrors {}
+}
+
 const breadCrumbFormatter = (crumb: Breadcrumb): string =>
 	`${crumb.type} | ${crumb.category} | ${JSON.stringify(crumb.data)}`;
 
@@ -108,16 +112,14 @@ logFunction('execute.error', async () => {
 				}),
 			})
 			.toPromise();
-		environment.mock.rejectMostRecentOperation({
-			name: 'error',
-			message: 'test relay error',
-			graphqlErrors: [
-				{
-					message: 'some remote error',
-					path: ['MyQuery', 'me', 'name'],
-				},
-			],
-		});
+		const error = new Error('test relay error');
+		error.graphqlErrors = [
+			{
+				message: 'some remote error',
+				path: ['MyQuery', 'me', 'name'],
+			},
+		];
+		environment.mock.rejectMostRecentOperation(error);
 		await req;
 	} catch (e) {
 		// nothing

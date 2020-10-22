@@ -8,7 +8,7 @@ type LogEvent = Parameters<LogFunction>[0];
 type GroupingOf<Col extends LogEvent, Grp extends string> =
 	Col extends { name: `${Grp}.${string}` } ? Col : never;
 
-export interface ErrorWithGraphQLErrors extends Error {
+export interface ErrorWithGraphQLErrors {
 	graphqlErrors?: ReadonlyArray<GraphQLFormattedError>;
 }
 
@@ -70,13 +70,12 @@ export const logFunction = ({
 			case 'execute.error': {
 				let errors: ReadonlyArray<GraphQLFormattedError> | 'na' = 'na';
 
-				const error = logEvent.error as ErrorWithGraphQLErrors;
+				let error = logEvent.error as ErrorWithGraphQLErrors;
 				if (
 					'graphqlErrors' in error &&
 					errorsIsGraphQLError(error?.graphqlErrors)
 				) {
 					errors = error.graphqlErrors;
-					delete error.graphqlErrors;
 				}
 
 				captureException(error, {
