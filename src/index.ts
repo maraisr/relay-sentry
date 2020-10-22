@@ -13,6 +13,12 @@ export interface ErrorWithGraphQLErrors extends Error {
 }
 
 interface Options {
+	/**
+	 * The "tag" key that'll get used to annotate the Exception as a Relay exception. Defaults to `"data.client"`.
+	 *
+	 * @example
+	 * data.client = relay
+	 */
 	tag?: string;
 }
 
@@ -33,6 +39,10 @@ const errorsIsGraphQLError = (
 ): errors is ReadonlyArray<GraphQLFormattedError> =>
 	Array.isArray(errors) && errors.some((item) => 'message' in item);
 
+/**
+ * Runs on every Relay life cycle stages, passing through some context for this function to _react_ upon. Through this
+ * you can pass an _optional_ {@link Options} to set some properties that get emitted to Sentry.
+ */
 export const logFunction = ({
 	tag = 'data.client',
 }: Options = {}): LogFunction => (logEvent) => {
