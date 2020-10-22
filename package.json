@@ -15,7 +15,6 @@
 		"email": "hi@marais.io",
 		"url": "https://marais.io"
 	},
-	"type": "module",
 	"exports": {
 		".": [
 			{
@@ -55,9 +54,15 @@
 	"devDependencies": {
 		"@marais/tsconfig": "^0.0.1",
 		"@rollup/plugin-node-resolve": "9.0.0",
+		"@sentry/node": "^5.27.0",
+		"@sentry/types": "^5.27.0",
 		"@types/relay-runtime": "^10.0.4",
+		"@types/relay-test-utils": "^6.0.2",
 		"graphql": "^15.3.0",
 		"prettier": "^2.0.5",
+		"relay-runtime": "^10.0.1",
+		"relay-test-utils": "^10.0.1",
+		"relay-test-utils-internal": "^10.0.1",
 		"rollup": "2.32.1",
 		"rollup-plugin-terser": "7.0.2",
 		"rollup-plugin-typescript2": "0.28.0",
