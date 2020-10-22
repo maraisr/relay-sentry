@@ -1,0 +1,74 @@
+{
+	"name": "relay-sentry",
+	"version": "0.0.0",
+	"description": "Relay log function that enriches Sentry with Relay life cycles and GraphQL data",
+	"keywords": [
+		"relay",
+		"graphql",
+		"sentry",
+		"error"
+	],
+	"repository": "maraisr/relay-sentry",
+	"license": "MIT",
+	"author": {
+		"name": "Marais Rossouw",
+		"email": "hi@marais.io",
+		"url": "https://marais.io"
+	},
+	"type": "module",
+	"exports": {
+		".": [
+			{
+				"import": "./dist/index.mjs",
+				"require": "./dist/index.js"
+			},
+			"./dist/index.js"
+		]
+	},
+	"main": "dist/index.js",
+	"unpkg": "dist/index.min.js",
+	"module": "dist/index.mjs",
+	"types": "types/index.d.ts",
+	"files": [
+		"dist",
+		"types"
+	],
+	"scripts": {
+		"bench": "node -r ts-node/register bench/index.ts",
+		"build": "rollup -c",
+		"format": "prettier \"{*,tests/*,src/*,.github/**/*}.+(ts|js|yml|md)\" --write",
+		"prepublishOnly": "yarn build",
+		"test": "uvu -r ts-node/register tests"
+	},
+	"prettier": {
+		"bracketSpacing": true,
+		"printWidth": 80,
+		"proseWrap": "always",
+		"singleQuote": true,
+		"tabWidth": 4,
+		"trailingComma": "all",
+		"useTabs": true
+	},
+	"devDependencies": {
+		"@marais/tsconfig": "^0.0.1",
+		"@rollup/plugin-node-resolve": "9.0.0",
+		"@types/relay-runtime": "^10.0.4",
+		"prettier": "^2.0.5",
+		"rollup": "2.32.1",
+		"rollup-plugin-terser": "7.0.2",
+		"rollup-plugin-typescript2": "0.28.0",
+		"ts-node": "^9.0.0",
+		"typescript": "^4.0.3",
+		"uvu": "^0.3.0"
+	},
+	"peerDependencies": {
+		"@types/relay-runtime": "^10.0.4"
+	},
+	"engines": {
+		"node": ">=10"
+	},
+	"volta": {
+		"node": "15.0.1",
+		"yarn": "1.22.5"
+	}
+}

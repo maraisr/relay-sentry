@@ -1,0 +1,27 @@
+{
+	"ts-node": {
+		"transpileOnly": true,
+		"compilerOptions": {
+			"module": "commonjs"
+		},
+		"include": [
+			"test/**/*"
+		]
+	},
+	"extends": "@marais/tsconfig",
+	"compilerOptions": {
+		"target": "ES2019",
+		"declaration": true,
+		"declarationDir": "types",
+		"lib": [
+			"ESNext"
+		],
+		"outDir": "./dist"
+	},
+	"include": [
+		"src/**/*"
+	],
+	"exclude": [
+		"node_modules"
+	]
+}
