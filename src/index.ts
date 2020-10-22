@@ -3,16 +3,14 @@ import type { GraphQLFormattedError } from 'graphql';
 import type { RequestParameters } from 'relay-runtime';
 import type { LogFunction } from 'relay-runtime/lib/store/RelayStoreTypes';
 
-declare global {
-	interface Error {
-		graphqlErrors?: ReadonlyArray<GraphQLFormattedError>;
-	}
-}
-
 type LogEvent = Parameters<LogFunction>[0];
 
 type GroupingOf<Col extends LogEvent, Grp extends string> =
 	Col extends { name: `${Grp}.${string}` } ? Col : never;
+
+export interface ErrorWithGraphQLErrors extends Error {
+	graphqlErrors?: ReadonlyArray<GraphQLFormattedError>;
+}
 
 interface Options {
 	tag?: string;
@@ -62,14 +60,16 @@ export const logFunction = ({
 			case 'execute.error': {
 				let errors: ReadonlyArray<GraphQLFormattedError> | 'na' = 'na';
 
+				const error = logEvent.error as ErrorWithGraphQLErrors;
 				if (
-					'graphqlErrors' in logEvent.error &&
-					errorsIsGraphQLError(logEvent.error.graphqlErrors)
+					'graphqlErrors' in error &&
+					errorsIsGraphQLError(error?.graphqlErrors)
 				) {
-					errors = logEvent.error.graphqlErrors;
+					errors = error.graphqlErrors;
+					delete error.graphqlErrors;
 				}
 
-				captureException(logEvent.error, {
+				captureException(error, {
 					tags: {
 						[tag]: 'relay',
 					},
