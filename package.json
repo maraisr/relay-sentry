@@ -1,6 +1,6 @@
 {
 	"name": "relay-sentry",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"description": "Relay log function that enriches Sentry with Relay life cycles and GraphQL data",
 	"keywords": [
 		"relay",
