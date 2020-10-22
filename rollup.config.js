@@ -23,7 +23,6 @@ export default {
 			sourcemap: false,
 			globals: {
 				'@sentry/minimal': 'Sentry',
-				'@sentry/types': 'Sentry',
 			},
 			plugins: [terser()],
 		},

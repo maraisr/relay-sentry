@@ -1,0 +1,38 @@
+name: CI
+
+on:
+    push:
+        branches: [main]
+    pull_request: {}
+
+jobs:
+    test:
+        name: Node.js v${{ matrix.nodejs }}
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                nodejs: [12, 14, 15]
+        steps:
+            - uses: actions/checkout@main
+            - uses: actions/setup-node@main
+              with:
+                  node-version: ${{ matrix.nodejs }}
+
+            - run: echo "::add-path::$(yarn global bin)"
+
+            - name: Install
+              run: |-
+                  yarn --frozen-lockfile;
+                  yarn global add nyc;
+
+            - name: Compile
+              run: yarn build
+
+            - name: Test
+              run: nyc --include=src yarn test
+
+            - name: Report
+              if: matrix.nodejs >= 15
+              run: |-
+                  nyc report --reporter=text-lcov > coverage.lcov;
+                  bash <(curl -s https://codecov.io/bash);

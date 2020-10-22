@@ -50,8 +50,7 @@
 		"useTabs": true
 	},
 	"dependencies": {
-		"@sentry/minimal": "^5.27.0",
-		"@sentry/types": "^5.27.0"
+		"@sentry/minimal": "^5.27.0"
 	},
 	"devDependencies": {
 		"@marais/tsconfig": "^0.0.1",
@@ -66,12 +65,12 @@
 		"typescript": "^4.1.0-dev.20201021",
 		"uvu": "^0.3.0"
 	},
-	"peerDependencies": {
+	"optionalDependencies": {
 		"@types/relay-runtime": "^10.0.4",
 		"graphql": "^15.3.0"
 	},
 	"engines": {
-		"node": ">=10"
+		"node": ">=12"
 	},
 	"volta": {
 		"node": "15.0.1",
