@@ -27,6 +27,9 @@ Sentry exception context. You can throw a _custom_ `Error` class that contains a
 property called `graphqlErrors`. Internally we look for that key on the error
 object, and send it.
 
+Under the hood it uses `@sentry/minimal` so there is no discrepancy between
+Node/Browser runtimes.
+
 <details>
 <summary>TypeScript users, we export an interface to help:</summary>
 
@@ -39,6 +42,30 @@ declare global {
 ```
 
 </details>
+
+## 🎢 What does it add?
+
+### Breadcrumbs ✔
+
+Leaves a debug/info breadcrumb trail for all intermediate life cycle events.
+
+![breadcrumbs](assets/breadcrumbs.jpg)
+
+> At this stage it doesn't filter any variables, but if there's a need for
+> it—submit a PR 🕺
+
+### Contexts ✔
+
+If the error was as a result of a Relay or Relay Network error, then this will
+include the remote errors array payload.
+
+![contexts](assets/context.jpg)
+
+### Customisable Tag ✔
+
+Apply's a tag when the exception was as a Result of Relay.
+
+![tags](assets/tags.jpg)
 
 ## 🔎 API
 
