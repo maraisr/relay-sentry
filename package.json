@@ -49,16 +49,16 @@
 		"useTabs": true
 	},
 	"dependencies": {
-		"@sentry/minimal": "^5.27.0",
-		"@sentry/types": "^5.27.0"
+		"@sentry/minimal": "^5.27.1",
+		"@sentry/types": "^5.27.1"
 	},
 	"devDependencies": {
 		"@marais/tsconfig": "^0.0.1",
 		"@rollup/plugin-node-resolve": "9.0.0",
-		"@sentry/node": "^5.27.0",
+		"@sentry/node": "^5.27.1",
 		"@sentry/types": "^5.27.0",
 		"@types/relay-runtime": "^10.0.4",
-		"@types/relay-test-utils": "^6.0.2",
+		"@types/relay-test-utils": "^6.0.3",
 		"graphql": "^15.3.0",
 		"prettier": "^2.0.5",
 		"relay-runtime": "^10.0.1",
@@ -72,7 +72,7 @@
 		"uvu": "^0.3.0"
 	},
 	"optionalDependencies": {
-		"@types/relay-runtime": "^10.0.4",
+		"@types/relay-runtime": "^10.0.9",
 		"graphql": "^15.3.0"
 	},
 	"engines": {

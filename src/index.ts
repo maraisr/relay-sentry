@@ -107,7 +107,6 @@ export const logFunction = ({
 			}
 		}
 	} else if (isQueryResourceEvent(logEvent)) {
-		// @ts-ignore wait for https://github.com/DefinitelyTyped/DefinitelyTyped/pull/49006 to merge
 		const { resourceID } = logEvent;
 		switch (logEvent.name) {
 			case 'queryresource.fetch': {
