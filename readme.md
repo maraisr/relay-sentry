@@ -21,7 +21,7 @@ const environment = new Environment({
 });
 ```
 
-If you're wanting to also include the
+If you want to also include the
 [GraphQL `errors` array](http://spec.graphql.org/draft/#sec-Errors) to the
 Sentry exception context. You can throw a _custom_ `Error` class that contains a
 property called `graphqlErrors`. Internally we look for that key on the error
@@ -63,7 +63,7 @@ include the remote errors array payload.
 
 ### Customisable Tag ✅
 
-Apply's a tag when the exception was as a Result of Relay.
+Applies a tag when the exception was as a Result of Relay.
 
 ![tags](assets/tags.jpg)
 
@@ -73,9 +73,10 @@ Apply's a tag when the exception was as a Result of Relay.
 
 `Options`
 
-| Option        | Description                                  | Default         |
-| ------------- | -------------------------------------------- | --------------- |
-| `tag: string` | The tag key used when raising a Sentry error | `"data.client"` |
+| Option                                           | Description                                        | Default         |
+| ------------------------------------------------ | -------------------------------------------------- | --------------- |
+| `tag?: string`                                   | The tag key used when raising a Sentry error       | `"data.client"` |
+| `filterEvents?: (logEvent: LogEvent) => boolean` | Use to filter log events from creating breadcrumbs | `undefined`     |
 
 ## ⁉ Help
 

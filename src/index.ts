@@ -1,7 +1,7 @@
 import { addBreadcrumb, captureException } from '@sentry/minimal';
 import { Severity } from '@sentry/types';
 import type { GraphQLFormattedError } from 'graphql';
-import type { RequestParameters } from 'relay-runtime';
+import type { RequestParameters, PayloadError } from 'relay-runtime';
 import type { LogFunction } from 'relay-runtime/lib/store/RelayStoreTypes';
 
 type LogEvent = Parameters<LogFunction>[0];
@@ -10,7 +10,7 @@ type GroupingOf<Col extends LogEvent, Grp extends string> =
 	Col extends { name: `${Grp}.${string}` } ? Col : never;
 
 export interface ErrorWithGraphQLErrors {
-	graphqlErrors?: ReadonlyArray<GraphQLFormattedError>;
+	graphqlErrors?: ReadonlyArray<GraphQLFormattedError | PayloadError>;
 }
 
 interface Options {
@@ -21,6 +21,26 @@ interface Options {
 	 * data.client = relay
 	 */
 	tag?: string;
+
+	/**
+	 * Use this function to filter events that you do not wish to emit as breadcrumbs. Perhaps you don't get when the
+	 * store did a garbage collection, so you can use this to filter that. The idea here is to keep this method pure, so
+	 * please don't use this to log things 😅
+	 *
+	 * Return `true` for the event not to be included.
+	 *
+	 * @example
+	 *
+	 * ```js
+	 * logFunction({
+	 *  filterEvents(logEvent) {
+	 *      // Don't include store.gc events
+	 *      return logEvent.name !== "store.gc";
+	 *  }
+	 * })
+	 * ```
+	 */
+	filterEvents?: (logEvent: LogEvent) => boolean;
 }
 
 const CATEGORY = 'relay' as const;
@@ -46,7 +66,10 @@ const errorsIsGraphQLError = (
  */
 export const logFunction = ({
 	tag = 'data.client',
+	filterEvents,
 }: Options = {}): LogFunction => (logEvent) => {
+	if (typeof filterEvents === 'function' && !filterEvents(logEvent)) return;
+
 	const category = `${CATEGORY}.${logEvent.name}`;
 
 	if (isExecuteEvent(logEvent)) {
@@ -70,7 +93,8 @@ export const logFunction = ({
 				break;
 			}
 			case 'execute.error': {
-				let errors: ReadonlyArray<GraphQLFormattedError> | 'na' = 'na';
+				let errors: ErrorWithGraphQLErrors['graphqlErrors'] | 'na' =
+					'na';
 
 				let error = logEvent.error as ErrorWithGraphQLErrors;
 				if (
@@ -151,6 +175,7 @@ export const logFunction = ({
 			type: 'debug',
 			level: Severity.Debug,
 			category,
+			data: {},
 		});
 	}
 };

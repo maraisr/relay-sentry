@@ -197,4 +197,35 @@ logFunction('queryresource', () => {
 	);
 });
 
+logFunction('when filtered', async () => {
+	const fn = relaySentry.logFunction({
+		filterEvents(logEvent) {
+			return logEvent.name !== 'store.gc';
+		},
+	});
+
+	fn({
+		name: 'store.gc',
+		references: new Set(['a']),
+	});
+
+	fn({
+		name: 'store.snapshot',
+	});
+
+	await getCurrentHub().getStackTop().client.flush(0);
+
+	// @ts-ignore
+	const crumbs = getCurrentHub().getScope()._breadcrumbs;
+	assert.is(Array.isArray(crumbs), true);
+
+	assert.snapshot(
+		crumbs
+			.map((i) => breadCrumbFormatter(i))
+			.join('\n')
+			.toString(),
+		`debug (debug) | relay.store.snapshot | {}`,
+	);
+});
+
 logFunction.run();

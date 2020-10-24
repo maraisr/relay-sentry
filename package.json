@@ -1,6 +1,6 @@
 {
 	"name": "relay-sentry",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"description": "Relay log function that enriches Sentry with Relay life cycles and GraphQL data",
 	"keywords": [
 		"relay",
@@ -12,7 +12,7 @@
 	"license": "MIT",
 	"author": {
 		"name": "Marais Rossouw",
-		"email": "hi@marais.io",
+		"email": "me@marais.dev",
 		"url": "https://marais.io"
 	},
 	"exports": {
@@ -72,8 +72,8 @@
 		"uvu": "^0.3.0"
 	},
 	"optionalDependencies": {
-		"@types/relay-runtime": "^10.0.9",
-		"graphql": "^15.3.0"
+		"@types/relay-runtime": ">=10",
+		"graphql": ">=15"
 	},
 	"engines": {
 		"node": ">=12"
