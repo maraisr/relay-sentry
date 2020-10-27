@@ -18,7 +18,7 @@ jobs:
               with:
                   node-version: ${{ matrix.nodejs }}
 
-            - run: echo "::add-path::$(yarn global bin)"
+            - run: yarn global bin >> $GITHUB_PATH
 
             - name: Install
               run: |-
