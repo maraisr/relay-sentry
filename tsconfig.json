@@ -11,6 +11,7 @@
 	"extends": "@marais/tsconfig",
 	"compilerOptions": {
 		"target": "ES2019",
+		"removeComments": false,
 		"declaration": true,
 		"declarationDir": "types",
 		"lib": [
