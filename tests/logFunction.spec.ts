@@ -135,6 +135,17 @@ logFunction('execute.error', async () => {
 	const [error] = reports;
 	assert.is('relay' in error.contexts, true, 'expects a relay context');
 
+	assert.equal(error.contexts.relay, {
+		transactionID: 100001,
+		name: 'execute.error',
+		errors: [
+			{
+				message: 'some remote error',
+				path: ['MyQuery', 'me', 'name'],
+			},
+		],
+	});
+
 	assert.equal(
 		error.tags,
 		{ 'data.client': 'relay' },
@@ -148,16 +159,38 @@ logFunction('execute.error', async () => {
 			.toString(),
 		`info (info) | relay.execute.start | {"transactionID":100001,"id":"77d0bff0563d7c4e8753ad3a6b219c1e","kind":"query","name":"MyQuery","variables":{"something":true}}`,
 	);
+});
 
+logFunction('execute.error w/o graphqlErrors key', async () => {
+	const { MyQuery } = generateAndCompile(
+		`query MyQuery($something: Boolean!) { me @include(if: $something) { name } }`,
+	);
+
+	let req;
+	try {
+		req = environment
+			.execute({
+				operation: createOperationDescriptor(MyQuery, {
+					something: true,
+				}),
+			})
+			.toPromise();
+		const error = new Error('test relay error');
+		environment.mock.rejectMostRecentOperation(error);
+		await req;
+	} catch (e) {
+		// nothing
+	}
+
+	await getCurrentHub().getStackTop().client.flush(0);
+
+	assert.is(Array.isArray(reports), true);
+	assert.is(reports.length, 1);
+
+	const [error] = reports;
 	assert.equal(error.contexts.relay, {
-		transactionID: 100001,
+		transactionID: 100002,
 		name: 'execute.error',
-		errors: [
-			{
-				message: 'some remote error',
-				path: ['MyQuery', 'me', 'name'],
-			},
-		],
 	});
 });
 

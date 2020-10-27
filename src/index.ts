@@ -93,15 +93,21 @@ export const logFunction = ({
 				break;
 			}
 			case 'execute.error': {
-				let errors: ErrorWithGraphQLErrors['graphqlErrors'] | 'na' =
-					'na';
+				const context: {
+					transactionID: number;
+					name: string;
+					errors?: ErrorWithGraphQLErrors['graphqlErrors'];
+				} = {
+					transactionID,
+					name: logEvent.name,
+				};
 
 				let error = logEvent.error as ErrorWithGraphQLErrors;
 				if (
 					'graphqlErrors' in error &&
 					errorsIsGraphQLError(error?.graphqlErrors)
 				) {
-					errors = error.graphqlErrors;
+					context.errors = error.graphqlErrors;
 				}
 
 				captureException(error, {
@@ -109,11 +115,7 @@ export const logFunction = ({
 						[tag]: 'relay',
 					},
 					contexts: {
-						relay: {
-							transactionID,
-							name: logEvent.name,
-							errors,
-						},
+						relay: context,
 					},
 				});
 				break;
