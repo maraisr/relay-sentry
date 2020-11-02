@@ -1,7 +1,7 @@
 import { addBreadcrumb, captureException } from '@sentry/minimal';
 import { Severity } from '@sentry/types';
 import type { GraphQLFormattedError } from 'graphql';
-import type { RequestParameters, PayloadError } from 'relay-runtime';
+import type { PayloadError } from 'relay-runtime';
 import type { LogFunction } from 'relay-runtime/lib/store/RelayStoreTypes';
 
 type LogEvent = Parameters<LogFunction>[0];
@@ -76,7 +76,7 @@ export const logFunction = ({
 		const { transactionID } = logEvent;
 		switch (logEvent.name) {
 			case 'execute.start': {
-				const params = logEvent.params as RequestParameters;
+				const params = logEvent.params;
 
 				addBreadcrumb({
 					type: 'info',
