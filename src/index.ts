@@ -120,6 +120,17 @@ export const logFunction = ({
 				});
 				break;
 			}
+			case 'execute.info':
+				addBreadcrumb({
+					type: 'info',
+					level: Severity.Info,
+					category,
+					data: {
+						transactionID,
+						info: logEvent.info,
+					},
+				});
+				break;
 			default: {
 				addBreadcrumb({
 					type: 'debug',
