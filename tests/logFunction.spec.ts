@@ -8,10 +8,7 @@ import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
 
 import * as relaySentry from '../src';
-
-declare global {
-	interface Error extends relaySentry.ErrorWithGraphQLErrors {}
-}
+import { ErrorWithGraphQLErrors } from '../types';
 
 const breadCrumbFormatter = (crumb: Breadcrumb): string =>
 	`${crumb.type} (${crumb.level}) | ${crumb.category} | ${JSON.stringify(
@@ -24,6 +21,12 @@ const environment = createMockEnvironment({
 });
 
 let reports: Array<Event> = [];
+
+class GraphqlError extends Error implements ErrorWithGraphQLErrors {
+	constructor(message: string, public graphqlErrors: any) {
+		super(message);
+	}
+}
 
 const logFunction = suite('logFunction');
 
@@ -114,13 +117,12 @@ logFunction('execute.error', async () => {
 				}),
 			})
 			.toPromise();
-		const error = new Error('test relay error');
-		error.graphqlErrors = [
+		const error = new GraphqlError('test relay error', [
 			{
 				message: 'some remote error',
 				path: ['MyQuery', 'me', 'name'],
 			},
-		];
+		]);
 		environment.mock.rejectMostRecentOperation(error);
 		await req;
 	} catch (e) {
@@ -130,34 +132,19 @@ logFunction('execute.error', async () => {
 	await getCurrentHub().getStackTop().client.flush(0);
 
 	assert.is(Array.isArray(reports), true);
-	assert.is(reports.length, 1);
+	assert.is(reports.length, 0);
 
-	const [error] = reports;
-	assert.is('relay' in error.contexts, true, 'expects a relay context');
-
-	assert.equal(error.contexts.relay, {
-		transactionID: 100001,
-		name: 'execute.error',
-		errors: [
-			{
-				message: 'some remote error',
-				path: ['MyQuery', 'me', 'name'],
-			},
-		],
-	});
-
-	assert.equal(
-		error.tags,
-		{ 'data.client': 'relay' },
-		'expects the data.client sentry tag',
-	);
+	// @ts-ignore
+	const crumbs = getCurrentHub().getScope()._breadcrumbs;
+	assert.is(Array.isArray(crumbs), true);
 
 	assert.snapshot(
-		error.breadcrumbs
+		crumbs
 			.map((i) => breadCrumbFormatter(i))
 			.join('\n')
 			.toString(),
-		`info (info) | relay.execute.start | {"transactionID":100001,"id":"77d0bff0563d7c4e8753ad3a6b219c1e","kind":"query","name":"MyQuery","variables":{"something":true}}`,
+		`info (info) | relay.execute.start | {"transactionID":100001,"id":"77d0bff0563d7c4e8753ad3a6b219c1e","kind":"query","name":"MyQuery","variables":{"something":true}}
+error (error) | relay.execute.error | {"transactionID":100001,"name":"execute.error","errors":[{"message":"some remote error","path":["MyQuery","me","name"]}]}`,
 	);
 });
 
@@ -185,16 +172,23 @@ logFunction('execute.error w/o graphqlErrors key', async () => {
 	await getCurrentHub().getStackTop().client.flush(0);
 
 	assert.is(Array.isArray(reports), true);
-	assert.is(reports.length, 1);
+	assert.is(reports.length, 0);
 
-	const [error] = reports;
-	assert.equal(error.contexts.relay, {
-		transactionID: 100002,
-		name: 'execute.error',
-	});
+	// @ts-ignore
+	const crumbs = getCurrentHub().getScope()._breadcrumbs;
+	assert.is(Array.isArray(crumbs), true);
+
+	assert.snapshot(
+		crumbs
+			.map((i) => breadCrumbFormatter(i))
+			.join('\n')
+			.toString(),
+		`info (info) | relay.execute.start | {"transactionID":100002,"id":"77d0bff0563d7c4e8753ad3a6b219c1e","kind":"query","name":"MyQuery","variables":{"something":true}}
+error (error) | relay.execute.error | {"transactionID":100002,"name":"execute.error"}`,
+	);
 });
 
-// To truely test the logger does its job correctly we'd need to bootstrap React—so we're just going to mock
+// To truly test the logger does its job correctly we'd need to bootstrap React—so we're just going to mock
 logFunction('queryresource', () => {
 	relaySentry.logFunction()({
 		name: 'queryresource.fetch',

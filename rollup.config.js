@@ -1,6 +1,5 @@
 import resolve from '@rollup/plugin-node-resolve';
 import typescript from 'rollup-plugin-typescript2';
-import { terser } from 'rollup-plugin-terser';
 import pkg from './package.json';
 
 export default {
@@ -8,24 +7,19 @@ export default {
 	output: [
 		{
 			format: 'esm',
-			file: pkg.module,
+			dir: 'dist/esm',
+			entryFileNames: '[name].js',
+			chunkFileNames: '[name].js',
+			preserveModules: true,
 			sourcemap: false,
 		},
 		{
 			format: 'cjs',
-			file: pkg.main,
+			dir: 'dist/cjs',
+			entryFileNames: '[name].js',
+			chunkFileNames: '[name].js',
+			preserveModules: true,
 			sourcemap: false,
-		},
-		{
-			name: pkg.name,
-			format: 'umd',
-			file: pkg.unpkg,
-			sourcemap: false,
-			globals: {
-				'@sentry/minimal': 'Sentry',
-				'@sentry/types': 'Sentry',
-			},
-			plugins: [terser()],
 		},
 	],
 	external: [

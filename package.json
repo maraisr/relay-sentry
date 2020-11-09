@@ -18,15 +18,14 @@
 	"exports": {
 		".": [
 			{
-				"import": "./dist/index.esm.js",
-				"require": "./dist/index.js"
+				"import": "./dist/esm/index.js",
+				"require": "./dist/cjs/index.js"
 			},
-			"./dist/index.js"
+			"./dist/cjs/index.js"
 		]
 	},
-	"main": "dist/index.js",
-	"unpkg": "dist/index.min.js",
-	"module": "dist/index.esm.js",
+	"main": "dist/cjs/index.js",
+	"module": "dist/esm/index.js",
 	"types": "types/index.d.ts",
 	"files": [
 		"dist",
@@ -64,10 +63,9 @@
 		"relay-test-utils": "^10.0.1",
 		"relay-test-utils-internal": "^10.0.1",
 		"rollup": "2.33.1",
-		"rollup-plugin-terser": "7.0.2",
 		"rollup-plugin-typescript2": "0.29.0",
 		"ts-node": "^9.0.0",
-		"typescript": "^4.1.0-dev.20201102",
+		"typescript": "^4.1.0-dev.20201021",
 		"uvu": "^0.3.0"
 	},
 	"peerDependencies": {

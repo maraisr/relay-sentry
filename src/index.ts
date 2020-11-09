@@ -1,4 +1,4 @@
-import { addBreadcrumb, captureException } from '@sentry/minimal';
+import { addBreadcrumb } from '@sentry/minimal';
 import { Severity } from '@sentry/types';
 import type { GraphQLFormattedError } from 'graphql';
 import type { PayloadError } from 'relay-runtime';
@@ -9,19 +9,21 @@ type LogEvent = Parameters<LogFunction>[0];
 type GroupingOf<Col extends LogEvent, Grp extends string> =
 	Col extends { name: `${Grp}.${string}` } ? Col : never;
 
-export interface ErrorWithGraphQLErrors {
+const isExecuteEvent = (
+	logEvent: LogEvent,
+): logEvent is GroupingOf<typeof logEvent, 'execute'> =>
+	logEvent.name.startsWith('execute');
+
+const isQueryResourceEvent = (
+	logEvent: LogEvent,
+): logEvent is GroupingOf<typeof logEvent, 'queryresource'> =>
+	logEvent.name.startsWith('queryresource');
+
+export interface ErrorWithGraphQLErrors extends Error {
 	graphqlErrors?: ReadonlyArray<GraphQLFormattedError | PayloadError>;
 }
 
 interface Options {
-	/**
-	 * The "tag" key that'll get used to annotate the Exception as a Relay exception. Defaults to `"data.client"`.
-	 *
-	 * @example
-	 * data.client = relay
-	 */
-	tag?: string;
-
 	/**
 	 * Use this function to filter events that you do not wish to emit as breadcrumbs. Perhaps you don't get when the
 	 * store did a garbage collection, so you can use this to filter that. The idea here is to keep this method pure, so
@@ -45,16 +47,6 @@ interface Options {
 
 const CATEGORY = 'relay' as const;
 
-const isExecuteEvent = (
-	logEvent: LogEvent,
-): logEvent is GroupingOf<typeof logEvent, 'execute'> =>
-	logEvent.name.startsWith('execute');
-
-const isQueryResourceEvent = (
-	logEvent: LogEvent,
-): logEvent is GroupingOf<typeof logEvent, 'queryresource'> =>
-	logEvent.name.startsWith('queryresource');
-
 const errorsIsGraphQLError = (
 	errors: any,
 ): errors is ReadonlyArray<GraphQLFormattedError> =>
@@ -64,10 +56,9 @@ const errorsIsGraphQLError = (
  * Runs on every Relay life cycle stages, passing through some context for this function to _react_ upon. Through this
  * you can pass an _optional_ {@link Options} to set some properties that get emitted to Sentry.
  */
-export const logFunction = ({
-	tag = 'data.client',
-	filterEvents,
-}: Options = {}): LogFunction => (logEvent) => {
+export const logFunction = ({ filterEvents }: Options = {}): LogFunction => (
+	logEvent,
+) => {
 	if (typeof filterEvents === 'function' && !filterEvents(logEvent)) return;
 
 	const category = `${CATEGORY}.${logEvent.name}`;
@@ -93,7 +84,7 @@ export const logFunction = ({
 				break;
 			}
 			case 'execute.error': {
-				const context: {
+				const data: {
 					transactionID: number;
 					name: string;
 					errors?: ErrorWithGraphQLErrors['graphqlErrors'];
@@ -107,16 +98,14 @@ export const logFunction = ({
 					'graphqlErrors' in error &&
 					errorsIsGraphQLError(error?.graphqlErrors)
 				) {
-					context.errors = error.graphqlErrors;
+					data.errors = error.graphqlErrors;
 				}
 
-				captureException(error, {
-					tags: {
-						[tag]: 'relay',
-					},
-					contexts: {
-						relay: context,
-					},
+				addBreadcrumb({
+					type: 'error',
+					level: Severity.Error,
+					category,
+					data,
 				});
 				break;
 			}
