@@ -6,8 +6,11 @@ import type { LogFunction } from 'relay-runtime/lib/store/RelayStoreTypes';
 
 type LogEvent = Parameters<LogFunction>[0];
 
-type GroupingOf<Col extends LogEvent, Grp extends string> =
-	Col extends { name: `${Grp}.${string}` } ? Col : never;
+type GroupingOf<Col extends LogEvent, Grp extends string> = Col extends {
+	name: `${Grp}.${string}`;
+}
+	? Col
+	: never;
 
 const isExecuteEvent = (
 	logEvent: LogEvent,
