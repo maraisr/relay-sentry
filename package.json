@@ -1,6 +1,6 @@
 {
 	"name": "relay-sentry",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Relay log function that enriches Sentry with Relay life cycles and GraphQL data",
 	"keywords": [
 		"relay",
@@ -70,8 +70,7 @@
 	},
 	"peerDependencies": {
 		"@types/relay-runtime": ">=10.0.10",
-		"graphql": ">=15.4",
-		"relay-runtime": ">=10.1.0"
+		"graphql": ">=15.4"
 	},
 	"peerDependenciesMeta": {
 		"@types/relay-runtime": {

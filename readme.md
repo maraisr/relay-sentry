@@ -1,4 +1,4 @@
-# `relay-sentry` [![CI](https://img.shields.io/github/workflow/status/maraisr/relay-sentry/CI/main)](https://github.com/maraisr/relay-sentry/actions?query=workflow:CI+branch:main) [![codecov](https://badgen.net/codecov/c/github/maraisr/relay-sentry)](https://codecov.io/gh/maraisr/relay-sentry)
+# `relay-sentry` [![CI](https://github.com/maraisr/relay-sentry/workflows/CI/badge.svg?query=branch:main)](https://github.com/maraisr/relay-sentry/actions?query=workflow:CI+branch:main) [![downloads](https://img.shields.io/npm/dm/relay-sentry)](https://npm.im/relay-sentry)
 
 > Relay log function that enriches Sentry with Relay lifecycles and GraphQL data
 
