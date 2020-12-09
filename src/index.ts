@@ -22,6 +22,11 @@ const isQueryResourceEvent = (
 ): logEvent is GroupingOf<typeof logEvent, 'queryresource'> =>
 	logEvent.name.startsWith('queryresource');
 
+const isNetworkEvent = (
+	logEvent: LogEvent,
+): logEvent is GroupingOf<typeof logEvent, 'network'> =>
+	logEvent.name.startsWith('network');
+
 export interface ErrorWithGraphQLErrors extends Error {
 	graphqlErrors?: ReadonlyArray<GraphQLFormattedError | PayloadError>;
 }
@@ -170,6 +175,65 @@ export const logFunction = ({ filterEvents }: Options = {}): LogFunction => (
 					category,
 					data: {
 						resourceID,
+					},
+				});
+				break;
+			}
+		}
+	} else if (isNetworkEvent(logEvent)) {
+		const { transactionID } = logEvent;
+		switch (logEvent.name) {
+			case 'network.start': {
+				const { params, variables } = logEvent;
+				addBreadcrumb({
+					type: 'debug',
+					level: Severity.Debug,
+					category,
+					data: {
+						transactionID,
+						id: params.id ?? params.cacheID,
+						kind: params.operationKind,
+						name: params.name,
+						variables,
+					},
+				});
+				break;
+			}
+			case 'network.error': {
+				const { error } = logEvent;
+
+				addBreadcrumb({
+					type: 'error',
+					level: Severity.Error,
+					category,
+					data: {
+						transactionID,
+						error,
+					},
+				});
+				break;
+			}
+			case 'network.info': {
+				const { info } = logEvent;
+
+				addBreadcrumb({
+					type: 'info',
+					level: Severity.Info,
+					category,
+					data: {
+						transactionID,
+						info,
+					},
+				});
+				break;
+			}
+			default: {
+				addBreadcrumb({
+					type: 'debug',
+					level: Severity.Debug,
+					category,
+					data: {
+						transactionID,
 					},
 				});
 				break;

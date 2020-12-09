@@ -98,7 +98,10 @@ logFunction('execute', async () => {
 			.join('\n')
 			.toString(),
 		`info (info) | relay.execute.start | {"transactionID":100000,"id":"77d0bff0563d7c4e8753ad3a6b219c1e","kind":"query","name":"MyQuery","variables":{"something":true}}
+debug (debug) | relay.network.start | {"transactionID":100001,"id":"77d0bff0563d7c4e8753ad3a6b219c1e","kind":"query","name":"MyQuery","variables":{"something":true}}
+debug (debug) | relay.network.next | {"transactionID":100001}
 debug (debug) | relay.execute.next | {"transactionID":100000}
+debug (debug) | relay.network.complete | {"transactionID":100001}
 debug (debug) | relay.execute.complete | {"transactionID":100000}`,
 	);
 });
@@ -143,8 +146,10 @@ logFunction('execute.error', async () => {
 			.map((i) => breadCrumbFormatter(i))
 			.join('\n')
 			.toString(),
-		`info (info) | relay.execute.start | {"transactionID":100001,"id":"77d0bff0563d7c4e8753ad3a6b219c1e","kind":"query","name":"MyQuery","variables":{"something":true}}
-error (error) | relay.execute.error | {"transactionID":100001,"name":"execute.error","errors":[{"message":"some remote error","path":["MyQuery","me","name"]}]}`,
+		`info (info) | relay.execute.start | {"transactionID":100002,"id":"77d0bff0563d7c4e8753ad3a6b219c1e","kind":"query","name":"MyQuery","variables":{"something":true}}
+debug (debug) | relay.network.start | {"transactionID":100003,"id":"77d0bff0563d7c4e8753ad3a6b219c1e","kind":"query","name":"MyQuery","variables":{"something":true}}
+error (error) | relay.network.error | {"transactionID":100003,"error":{"graphqlErrors":[{"message":"some remote error","path":["MyQuery","me","name"]}]}}
+error (error) | relay.execute.error | {"transactionID":100002,"name":"execute.error","errors":[{"message":"some remote error","path":["MyQuery","me","name"]}]}`,
 	);
 });
 
@@ -183,8 +188,10 @@ logFunction('execute.error w/o graphqlErrors key', async () => {
 			.map((i) => breadCrumbFormatter(i))
 			.join('\n')
 			.toString(),
-		`info (info) | relay.execute.start | {"transactionID":100002,"id":"77d0bff0563d7c4e8753ad3a6b219c1e","kind":"query","name":"MyQuery","variables":{"something":true}}
-error (error) | relay.execute.error | {"transactionID":100002,"name":"execute.error"}`,
+		`info (info) | relay.execute.start | {"transactionID":100004,"id":"77d0bff0563d7c4e8753ad3a6b219c1e","kind":"query","name":"MyQuery","variables":{"something":true}}
+debug (debug) | relay.network.start | {"transactionID":100005,"id":"77d0bff0563d7c4e8753ad3a6b219c1e","kind":"query","name":"MyQuery","variables":{"something":true}}
+error (error) | relay.network.error | {"transactionID":100005,"error":{}}
+error (error) | relay.execute.error | {"transactionID":100004,"name":"execute.error"}`,
 	);
 });
 
