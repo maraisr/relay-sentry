@@ -74,49 +74,6 @@ export const logFunction = ({ filterEvents }: Options = {}): LogFunction => (
 	if (isExecuteEvent(logEvent)) {
 		const { transactionID } = logEvent;
 		switch (logEvent.name) {
-			case 'execute.start': {
-				const params = logEvent.params;
-
-				addBreadcrumb({
-					type: 'info',
-					level: Severity.Info,
-					category,
-					data: {
-						transactionID,
-						id: params.id ?? params.cacheID,
-						kind: params.operationKind,
-						name: params.name,
-						variables: logEvent.variables,
-					},
-				});
-				break;
-			}
-			case 'execute.error': {
-				const data: {
-					transactionID: number;
-					name: string;
-					errors?: ErrorWithGraphQLErrors['graphqlErrors'];
-				} = {
-					transactionID,
-					name: logEvent.name,
-				};
-
-				let error = logEvent.error as ErrorWithGraphQLErrors;
-				if (
-					'graphqlErrors' in error &&
-					errorsIsGraphQLError(error?.graphqlErrors)
-				) {
-					data.errors = error.graphqlErrors;
-				}
-
-				addBreadcrumb({
-					type: 'error',
-					level: Severity.Error,
-					category,
-					data,
-				});
-				break;
-			}
 			case 'execute.info':
 				addBreadcrumb({
 					type: 'info',
@@ -184,32 +141,45 @@ export const logFunction = ({ filterEvents }: Options = {}): LogFunction => (
 		const { transactionID } = logEvent;
 		switch (logEvent.name) {
 			case 'network.start': {
-				const { params, variables } = logEvent;
+				const params = logEvent.params;
+
 				addBreadcrumb({
-					type: 'debug',
-					level: Severity.Debug,
+					type: 'info',
+					level: Severity.Info,
 					category,
 					data: {
 						transactionID,
 						id: params.id ?? params.cacheID,
 						kind: params.operationKind,
 						name: params.name,
-						variables,
+						variables: logEvent.variables,
 					},
 				});
 				break;
 			}
 			case 'network.error': {
-				const { error } = logEvent;
+				const data: {
+					transactionID: number;
+					name: string;
+					errors?: ErrorWithGraphQLErrors['graphqlErrors'];
+				} = {
+					transactionID,
+					name: logEvent.name,
+				};
+
+				let error = logEvent.error as ErrorWithGraphQLErrors;
+				if (
+					'graphqlErrors' in error &&
+					errorsIsGraphQLError(error?.graphqlErrors)
+				) {
+					data.errors = error.graphqlErrors;
+				}
 
 				addBreadcrumb({
 					type: 'error',
 					level: Severity.Error,
 					category,
-					data: {
-						transactionID,
-						error,
-					},
+					data,
 				});
 				break;
 			}
@@ -223,6 +193,17 @@ export const logFunction = ({ filterEvents }: Options = {}): LogFunction => (
 					data: {
 						transactionID,
 						info,
+					},
+				});
+				break;
+			}
+			case 'network.complete': {
+				addBreadcrumb({
+					type: 'info',
+					level: Severity.Info,
+					category,
+					data: {
+						transactionID,
 					},
 				});
 				break;
