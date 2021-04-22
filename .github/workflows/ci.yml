@@ -11,14 +11,25 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                nodejs: [12, 14, 15]
+                nodejs: [12, 14, 15, 16]
         steps:
             - uses: actions/checkout@main
             - uses: actions/setup-node@main
               with:
                   node-version: ${{ matrix.nodejs }}
 
-            - run: yarn global bin >> $GITHUB_PATH
+            - name: (env) yarn global
+              run: |-
+                  yarn global bin >> $GITHUB_PATH
+                  echo "YARN_CACHE_DIR=$(yarn cache dir)" >> $GITHUB_ENV
+
+            - name: (env) cache
+              uses: actions/cache@main
+              with:
+                  path: ${{ env.YARN_CACHE_DIR }}
+                  key:
+                      ${{ runner.os }}-node${{ matrix.nodejs }}-${{
+                      hashFiles('./package.json', './yarn.lock') }}
 
             - name: Install
               run: |-
@@ -28,11 +39,11 @@ jobs:
             - name: Compile
               run: yarn build
 
-            - name: Test
+            - name: Test w/ Coverage
               run: nyc --include=src yarn test
 
             - name: Report
-              if: matrix.nodejs >= 15
+              if: matrix.nodejs >= 16
               run: |-
                   nyc report --reporter=text-lcov > coverage.lcov;
                   bash <(curl -s https://codecov.io/bash);
