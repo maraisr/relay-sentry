@@ -1,6 +1,6 @@
 {
 	"name": "relay-sentry",
-	"version": "0.2.0",
+	"version": "0.3.0-alpha.1",
 	"description": "Relay log function that enriches Sentry with Relay life cycles and GraphQL data",
 	"keywords": [
 		"relay",
@@ -18,60 +18,42 @@
 	"exports": {
 		".": [
 			{
-				"import": "./dist/esm/index.js",
-				"require": "./dist/cjs/index.js"
-			},
-			"./dist/cjs/index.js"
-		]
+				"types": "./index.d.ts",
+				"import": "./index.mjs",
+				"require": "./index.js"
+			}
+		],
+		"./package.json": "./package.json"
 	},
-	"main": "dist/cjs/index.js",
-	"module": "dist/esm/index.js",
-	"types": "types/index.d.ts",
+	"main": "index.js",
+	"module": "index.js",
+	"types": "index.d.ts",
 	"files": [
-		"dist",
-		"types"
+		"index.js",
+		"index.mjs",
+		"index.d.ts"
 	],
 	"scripts": {
-		"bench": "node -r ts-node/register bench/index.ts",
-		"build": "rollup -c",
+		"build": "bundt",
 		"format": "prettier \"{*,tests/*,src/*,.github/**/*}.+(ts|js|yml|md)\" --write",
-		"prepublishOnly": "yarn build",
-		"test": "uvu -r ts-node/register tests"
-	},
-	"prettier": {
-		"bracketSpacing": true,
-		"printWidth": 80,
-		"proseWrap": "always",
-		"singleQuote": true,
-		"tabWidth": 4,
-		"trailingComma": "all",
-		"useTabs": true
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@sentry/minimal": "^6.3.0",
-		"@sentry/types": "^6.3.0"
+		"@sentry/hub": "^7.11.1"
 	},
 	"devDependencies": {
-		"@marais/tsconfig": "0.0.1",
-		"@rollup/plugin-node-resolve": "11.2.1",
-		"@sentry/node": "6.3.0",
-		"@types/relay-runtime": "11.0.0",
-		"@types/relay-test-utils": "6.0.3",
-		"graphql": "15.5.0",
-		"prettier": "2.2.1",
-		"relay-runtime": "11.0.2",
-		"relay-test-utils": "11.0.2",
-		"relay-test-utils-internal": "10",
-		"rollup": "2.45.2",
-		"rollup-plugin-typescript2": "0.30.0",
-		"ts-node": "9.1.1",
-		"typescript": "4.2.4",
-		"uvu": "0.5.1"
+		"@marais/tsconfig": "0.0.3",
+		"@sentry/node": "7.11.1",
+		"@types/relay-runtime": "14.1.2",
+		"@types/relay-test-utils": "14.1.0",
+		"bundt": "2.0.0-next.5",
+		"graphql": "16.6.0",
+		"prettier": "2.7.1",
+		"typescript": "4.7.4"
 	},
 	"peerDependencies": {
 		"@types/relay-runtime": ">=10.0.10",
-		"graphql": ">=15.4",
-		"relay-runtime": ">=10.1.2"
+		"graphql": ">=15.4"
 	},
 	"peerDependenciesMeta": {
 		"@types/relay-runtime": {
@@ -85,7 +67,6 @@
 		"node": ">=12"
 	},
 	"volta": {
-		"node": "16.0.0",
-		"yarn": "1.22.10"
+		"node": "17.9.1"
 	}
 }

@@ -1,25 +1,21 @@
 {
-	"ts-node": {
-		"transpileOnly": true,
-		"compilerOptions": {
-			"module": "commonjs"
-		},
-		"include": [
-			"test/**/*"
-		]
-	},
 	"extends": "@marais/tsconfig",
 	"compilerOptions": {
-		"target": "ES2019",
+		"rootDir": ".",
+		"baseUrl": ".",
+		"target": "esnext",
 		"removeComments": false,
-		"declaration": true,
-		"declarationDir": "types",
 		"lib": [
 			"ESNext"
 		],
-		"outDir": "./dist"
+		"paths": {
+			"relay-sentry": [
+				"./src/index.d.ts"
+			]
+		}
 	},
 	"include": [
+		"test/**/*",
 		"src/**/*"
 	],
 	"exclude": [

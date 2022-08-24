@@ -1,17 +1,17 @@
 node_modules
 .DS_Store
-*-lock.*
+*-lock.json
+*.lock
 *.log
 
-/dist
-/types
 /coverage
-
-# Yarn
-.yarn/
-/.pnp*
+/.nyc_output
 
 # Editors
 *.iml
 /.idea
 /.vscode
+
+/index.js
+/index.mjs
+/index.d.ts
