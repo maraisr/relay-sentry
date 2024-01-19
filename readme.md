@@ -15,6 +15,9 @@
 <a href="https://github.com/maraisr/relay-sentry/actions/workflows/ci.yml">
 	<img src="https://github.com/maraisr/relay-sentry/actions/workflows/ci.yml/badge.svg"/>
 </a>
+<a href="https://licenses.dev/npm/relay-sentry">
+  <img src="https://licenses.dev/b/npm/relay-sentry?style=dark" alt="licenses" />
+</a>
 <a href="https://npm-stat.com/charts.html?package=relay-sentry">
 	<img src="https://badgen.net/npm/dw/relay-sentry?labelColor=black&color=black&cache=600" alt="downloads"/>
 </a>
